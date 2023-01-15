@@ -22,7 +22,7 @@ namespace testAPI1.Controllers
             return Ok(await this.context.Author.ToListAsync());
         }
 
-        [HttpPost("Create a book")]
+        [HttpPost("create-a-book")]
         public async Task<ActionResult<List<Book>>> AddBook(Book book)
         {
             this.context.Books.Add(book);
@@ -30,29 +30,30 @@ namespace testAPI1.Controllers
             return Ok(await this.context.Books.ToListAsync());
         }
 
-        [HttpGet("Read all books")]
+        [HttpGet("read-all-books")]
         public async Task<ActionResult<List<Book>>> GetBooks()
         {
             return Ok(await this.context.Books.ToListAsync());
         }
 
-        [HttpGet("Read all authors")]
+        [HttpGet("read-all-authors")]
         public async Task<ActionResult<List<Author>>> GetAuthors()
         {
             return Ok(await this.context.Author.ToListAsync());
         }
 
-        [HttpGet("author-search-by name")]
+        [HttpGet("author-search-by-first-name")]
         public async Task<ActionResult<Author>> GetAuthor(string FirstName)
         {
-            var Author = await this.context.Author.FindAsync(FirstName);
-            //var Author = await this.context.Author.Where(A => A.FirstName == FirstName).ToListAsync<Author>;
+            var Author = await this.context.Author.SingleOrDefaultAsync(a => a.FirstName == FirstName);
+            //var Author = await this.context.Author.FindAsync(FirstName);
+            //var Author = await this.context.Author.Where(a => a.FirstName == FirstName).FirstOrDefault();
             if (Author == null)
                 return BadRequest("Author not found");
             return Ok(Author);
         }
 
-        [HttpPut("Update a book")]
+        [HttpPut("update-a-book")]
         public async Task<ActionResult<List<Book>>> UpdateBook(Book request)
         {
             var dbBook = await this.context.Books.FindAsync(request.Id);
@@ -69,7 +70,7 @@ namespace testAPI1.Controllers
             return Ok(await this.context.Books.ToListAsync());
         }
 
-        [HttpDelete("Delete a book")]
+        [HttpDelete("delete-a-book")]
         public async Task<ActionResult<List<Book>>> Delete(int id)
         {
             var dbBook = await this.context.Books.FindAsync(id);
@@ -79,6 +80,16 @@ namespace testAPI1.Controllers
             this.context.Books.Remove(dbBook);
             await this.context.SaveChangesAsync();
             return Ok(await this.context.Books.ToListAsync());
+        }
+
+        [HttpGet("search-book")]
+        public async Task<ActionResult<Book>> GetBook(string Title)
+        {
+            var Book = await this.context.Books.SingleOrDefaultAsync(a => a.Title == Title);
+          
+            if (Book == null)
+                return BadRequest("Book not found");
+            return Ok(Book);
         }
     }
 }
